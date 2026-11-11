@@ -1,0 +1,11 @@
+{% extends "base.html" %}                 {# base.html 공통틀을 물려받아요 #}
+{% from "_hop.html" import hop %}         {# 글자 통통 도구 #}
+
+{% block title %}{{ name }} 님 · 클래스로 마켓{% endblock %}   {# 탭 제목에도 이름을 넣어요 #}
+
+{% block content %}                       {# 본문 빈칸 채우기 시작 #}
+  <section class="about">
+    <h1 class="display intro">{{ hop("안녕하세요, " ~ name ~ " 님!") }}</h1>   {# name 자리에 app.py가 건네준 이름이 들어가요 #}
+    <div class="about-txt"><p>오늘은 어떤 수업을 들어볼까요?</p></div>
+  </section>
+{% endblock %}                            {# 본문 빈칸 채우기 끝 #}

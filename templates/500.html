@@ -1,0 +1,22 @@
+{% extends "base.html" %}                 {# base.html 공통틀을 물려받아요 (메뉴가 그대로 있어서 다른 곳으로 갈 수 있어요) #}
+{% from "_hop.html" import hop, blob %}   {# 글자 통통 + 손그림 뱃지 모양 도구 #}
+
+{% block title %}잠시 문제가 생겼어요 · 클래스로 마켓{% endblock %}   {# 탭 제목 빈칸 채우기 #}
+
+{% block content %}                       {# 본문 빈칸 채우기 시작 #}
+  <section class="about">
+    <p class="display huge intro" aria-hidden="true">{{ hop("500") }}</p>   {# 장식용 큰 숫자 #}
+    <h1 class="about-h1">잠시 문제가 생겼어요</h1>   {# 사용자 잘못이 아니라는 걸 먼저 알려줘요 #}
+    <div class="about-txt">
+      <p>저희 쪽에서 일이 꼬였어요. 입력하신 내용 때문이 아니에요.</p>
+      <p>잠시 후 새로고침하거나, 아래 버튼으로 홈으로 가 주세요.</p>   {# 할 수 있는 일을 알려줘요 (에러 내용은 보여주지 않아요) #}
+    </div>
+  </section>
+
+  <section class="cta" aria-label="홈으로 가기">
+    <a class="badge c-teal" href="{{ url_for('home') }}" style="--d:1">   {# / 로 가는 링크 #}
+      {{ blob(2) }}
+      <span class="inner"><span class="word">{{ hop("홈으로") }}</span><span class="cap">처음 화면으로 돌아가기</span></span>
+    </a>
+  </section>
+{% endblock %}                            {# 본문 빈칸 채우기 끝 #}

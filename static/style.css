@@ -1,0 +1,278 @@
+/* 색: 글자 #222 · 프라이머리(버튼·링크) #6B3E26 · 선택 탭 #121212 · 할인율 #FF1F1F · 보조 글자 #7a7a7a · 선 #e0e0e0 · 회색 면 #f5f5f7 · 배경 #fff */
+
+/* 화면 전체: 글꼴, 배경색, 여백 */
+body {
+  margin: 0;
+  font-family: "Pretendard", -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  background: #fff;
+  color: #222;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a { color: #6B3E26; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid #6B3E26; outline-offset: 2px; }
+
+/* 맨 위 머리 부분: 서비스 이름 + 메뉴를 양쪽 끝에 */
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  /* 위아래 16px, 양옆은 본문(최대 1200px + 안쪽 여백 40px)과 같은 선에 맞춰요.
+     화면이 넓으면 남는 폭의 절반만큼 더 밀어 넣어서, 로고·메뉴가 본문 폭 안에만 있어요.
+     밑줄(border)은 화면 끝까지 그대로 이어져요. */
+  padding: 16px max(40px, calc((100% - 1200px) / 2 + 40px));
+  background: #fff;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.logo {
+  color: #222;
+  font-size: 20px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.menu { display: flex; gap: 16px; }
+
+.menu a {
+  color: #7a7a7a;
+  text-decoration: none;
+}
+
+.menu a:hover,
+.menu a[aria-current="page"] {
+  color: #222;
+  font-weight: 600;
+}
+
+/* 가운데 본문 */
+.content {
+  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.content h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #222;
+}
+
+/* 맨 아래 바닥글씨 */
+.bottom {
+  padding: 16px;
+  text-align: center;
+  font-size: 13px;
+  color: #7a7a7a;
+}
+
+/* 목록 제목 + 부제 */
+.list-head { margin-bottom: 20px; }
+.sub { margin: 6px 0 0; font-size: 15px; color: #7a7a7a; }
+
+/* 카테고리 칩 (홈과 목록이 같이 써요) */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chips-scroll {                      /* 목록에서는 한 줄로 옆으로 밀어요 */
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px;
+}
+.chips-scroll::-webkit-scrollbar { display: none; }
+
+.chip {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 999px;
+  background: #fff;
+  color: #222;
+  font-size: 14px;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.chip:hover { text-decoration: none; border-color: #222; }
+.chip:active { transform: scale(0.95); }
+
+.chip.is-on {                        /* 선택된 칩 = 진한 검정 (눈에 잘 띄게) */
+  background: #121212;
+  border-color: #121212;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* 개수 + 정렬 상자 */
+.list-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.count {
+  margin: 0;
+  color: #7a7a7a;
+  font-size: 14px;
+}
+
+.sort {
+  appearance: none;
+  font: inherit;
+  font-size: 14px;
+  color: #222;
+  padding: 8px 34px 8px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 999px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23222' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;
+  cursor: pointer;
+}
+
+.list-bar button {
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: #6B3E26;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* 클래스 카드: PC 여러 열, 휴대폰 1열 */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 12px;
+}
+
+.card {
+  display: flex;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 18px;
+  background: #fff;
+}
+
+a.card {
+  color: inherit;
+  text-decoration: none;
+}
+
+a.card:hover { border-color: #222; }
+
+.thumb {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  background: #f5f5f7;
+  object-fit: cover;                 /* 나중에 사진이 들어와도 찌그러지지 않게 */
+}
+
+/* 이미지 없을 때: 카테고리별 연한 배경 + 진한 아이콘 (오류가 아니라 '표지'처럼 보이게) */
+.thumb-cover {
+  display: grid;
+  place-items: center;
+  color: #7a7a7a;                    /* 모르는 카테고리 기본색 */
+}
+.thumb-cover svg { width: 40px; height: 40px; }
+
+.thumb-cover[data-cat="공예"]   { background: #F6EDE4; color: #8A5A3B; }
+.thumb-cover[data-cat="드로잉"] { background: #FBEDEE; color: #B04B57; }
+.thumb-cover[data-cat="디지털"] { background: #E9EFF9; color: #3D5F9A; }
+.thumb-cover[data-cat="요리"]   { background: #FCF1DD; color: #A86C12; }
+.thumb-cover[data-cat="운동"]   { background: #E6F3EC; color: #2F7A57; }
+.thumb-cover[data-cat="음악"]   { background: #EFEBF8; color: #6A4FA0; }
+
+.card-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.card h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.card p { margin: 0; }
+.card .rating { margin-top: auto; font-size: 13px; }
+
+.meta {
+  margin: 0;
+  font-size: 12px;
+  color: #7a7a7a;
+}
+
+/* 가격 · 평점 (목록과 상세가 같이 써요) */
+.price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 15px;
+}
+
+.price strong { font-weight: 700; white-space: nowrap; }
+.price .pct { color: #FF1F1F; font-weight: 700; }   /* 할인율 = 레드 */
+.price s { color: #7a7a7a; font-size: 13px; white-space: nowrap; }
+.price .inquiry { font-weight: 600; }
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.star { color: #F5A623; }            /* 별 = 노란색 */
+
+.muted { color: #7a7a7a; }
+
+.empty {
+  padding: 32px 0;
+  text-align: center;
+  color: #7a7a7a;
+}
+
+/* 상세 화면 */
+.back {
+  display: inline-block;
+  margin-bottom: 16px;
+  color: #6B3E26;
+  text-decoration: none;
+}
+
+.back:hover { text-decoration: underline; }
+
+.detail .meta { font-size: 14px; margin-bottom: 6px; }
+.detail .price { font-size: 20px; margin-top: 12px; }
+.detail .rating { margin-top: 8px; }
+
+/* 휴대폰 */
+@media (max-width: 640px) {
+  .top { padding: 14px 16px; }
+  .content { padding: 20px 16px; }
+  .cards { gap: 24px; }
+  .card { padding: 0; border: 0; }   /* 테두리 없애고 간격 넓히기 */
+  a.card:hover { border: 0; }
+}

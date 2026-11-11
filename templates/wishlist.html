@@ -1,0 +1,39 @@
+{% extends "base.html" %}                 {# base.html 공통틀을 물려받아요 #}
+{% from "_hop.html" import hop %}         {# 글자 통통 도구 #}
+
+{% block title %}찜 목록 · 클래스로 마켓{% endblock %}   {# 탭 제목 빈칸 채우기 #}
+
+{% block content %}                       {# 본문 빈칸 채우기 시작 #}
+  <div class="list-head">                 {# 제목 + 부제 #}
+    <h1 class="page-title intro">{{ hop("내 찜 목록") }}</h1>
+    <p class="sub">로그인 없이 이 브라우저에 30일 동안 저장돼요</p>
+  </div>
+
+  {% if classes %}                        {# 찜한 클래스가 하나라도 있으면 #}
+    <p class="count">찜한 클래스 <strong>{{ classes|length }}</strong>개</p>
+    <div class="cards">                   {# 목록 화면과 같은 카드 모양 #}
+      {% for c in classes %}
+        <div class="wish-item">           {# 카드(링크) + 찜 취소 버튼 묶음 (링크 안에 버튼을 넣으면 안 돼서 나란히 둬요) #}
+          <a class="card" href="{{ url_for('class_detail', class_id=c.id) }}">
+            {% include "_thumb.html" %}   {# 썸네일 조각 #}
+            <div class="card-body">
+              <p class="meta">{{ c.category }} · {{ c.region }}</p>
+              <h2>{{ c.title }}</h2>
+              {% include "_price_rating.html" %}   {# 가격·평점 조각 #}
+            </div>
+          </a>
+          <form method="post" action="{{ url_for('set_wish', class_id=c.id) }}">   {# 여기서도 POST로 찜 취소 #}
+            <input type="hidden" name="next" value="wishlist">   {# 숨은 칸: "찜 목록으로 돌아와 줘"라는 표시 #}
+            <input type="hidden" name="want" value="off">        {# 숨은 칸: "취소해줘" (찜 목록에선 항상 취소 버튼) #}
+            <button type="submit" class="wish-btn is-on small" aria-label="{{ c.title }} 찜 취소">♥ 찜 취소</button>   {# aria-label: 화면 읽기 프로그램이 어느 클래스인지 알게 #}
+          </form>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}                              {# 찜한 게 하나도 없으면 #}
+    <div class="empty">
+      <p>아직 찜한 클래스가 없어요</p>
+      <a class="wish-go" href="{{ url_for('class_list') }}">클래스 둘러보기 →</a>   {# 다음에 할 일로 안내해요 #}
+    </div>
+  {% endif %}
+{% endblock %}                            {# 본문 빈칸 채우기 끝 #}

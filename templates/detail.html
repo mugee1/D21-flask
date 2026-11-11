@@ -1,0 +1,120 @@
+{% extends "base.html" %}                 {# base.html 공통틀을 물려받아요 #}
+{% from "_hop.html" import hop, blob %}   {# 글자 통통 + 손그림 뱃지 모양 도구 #}
+
+{% block title %}{{ c.title }} · 클래스로 마켓{% endblock %}   {# 탭 제목에 클래스 이름을 넣어요 #}
+
+{% block content %}                       {# 본문 빈칸 채우기 시작 #}
+  <a class="back" href="{{ url_for('class_list', category=c.category) }}">← {{ c.category }} 목록</a>   {# 이 클래스의 카테고리 목록으로 돌아가요 (/classes?category=공예) #}
+
+  <div class="detail">
+    <div class="detail-main">             {# 왼쪽: 썸네일 + 이름 + 가격·평점 #}
+      {% include "_thumb.html" %}         {# 목록과 같은 썸네일 조각 (크게 보여줘요) #}
+      <p class="meta">{{ c.category }} · {{ c.region }}</p>   {# 카테고리 · 지역 #}
+      <h1>{{ c.title }}</h1>              {# 클래스 이름 #}
+      {% include "_price_rating.html" %}  {# 목록 카드와 똑같은 가격·평점 조각 → 빈칸 처리도 똑같아요 #}
+
+      <form class="wish-form" method="post" action="{{ url_for('set_wish', class_id=c.id) }}">   {# 찜은 값을 바꾸는 일이라 POST로 보내요 #}
+        {% if is_wished %}                {# 이미 찜했으면 #}
+          <input type="hidden" name="want" value="off">   {# 숨은 칸: "취소해줘" (바꿔줘가 아니라 원하는 결과를 정확히 보내요) #}
+          <button type="submit" class="wish-btn is-on">♥ 찜 취소</button>   {# 꽉 찬 하트 #}
+        {% else %}                        {# 아직이면 #}
+          <input type="hidden" name="want" value="on">    {# 숨은 칸: "찜해줘" #}
+          <button type="submit" class="wish-btn">♡ 찜하기</button>   {# 빈 하트 #}
+        {% endif %}
+      </form>
+    </div>
+
+    <dl class="facts">                    {# 오른쪽: 한눈에 보는 정보표 (손으로 그은 선으로 나눠요) #}
+      <div class="frow"><dt>카테고리</dt><dd>{{ c.category }}</dd></div>
+      <div class="frow"><dt>지역</dt><dd>{{ c.region }}</dd></div>
+      <div class="frow"><dt>가격</dt><dd>
+        {% if c.sale_price is none %}가격 문의
+        {% elif c.on_sale %}{{ c.sale_price|won }} <span class="muted">(정가 {{ c.price|won }})</span>
+        {% else %}{{ c.sale_price|won }}{% endif %}
+      </dd></div>
+      <div class="frow"><dt>평점</dt><dd>
+        {% if c.rating is none %}아직 리뷰가 없어요{% else %}★ {{ "%.1f"|format(c.rating) }} · 리뷰 {{ c.reviews }}개{% endif %}
+      </dd></div>
+    </dl>
+  </div>
+
+  {# ---------- 수강후기: 남기기 form + 후기 목록 ---------- #}
+  <section class="reviews" id="reviews" aria-labelledby="reviews-title">   {# id="reviews": 저장 후 여기로 바로 스크롤돼요 #}
+    <h2 class="reviews-title" id="reviews-title">수강후기 <span class="muted">{{ stats.count }}개</span></h2>   {# DB에서 센 후기 개수 #}
+
+    {% if stats.count %}                  {# 후기가 1개 이상일 때만 평균을 보여줘요 (0개면 평균이 없어요) #}
+      <div class="review-summary">
+        <strong class="avg">{{ "%.1f"|format(stats.avg) }}</strong>   {# 평균 별점 (4 → "4.0"처럼 항상 소수 한 자리) #}
+        {% set full = (stats.avg + 0.5)|int %}   {# 별 몇 개를 채울지: 0.5를 더하고 소수점을 버리면 반올림 (4.3 → 4개, 4.5 → 5개) · |round는 .5를 짝수 쪽으로 보내서(4.5 → 4) 안 썼어요 #}
+        <span class="star big" aria-hidden="true">{{ "★" * full }}{{ "☆" * (5 - full) }}</span>   {# 채운 별 + 빈 별 = 5개 #}
+        <span class="sr-only">5점 만점에 평균 {{ "%.1f"|format(stats.avg) }}점,</span>   {# 화면 읽기 프로그램용 설명 #}
+        <span class="muted">이 사이트 후기 {{ stats.count }}개의 평균</span>   {# 위 정보표의 평점(외부 데이터)과 헷갈리지 않게 출처를 적어요 #}
+      </div>
+    {% endif %}
+
+    {% for message in get_flashed_messages() %}   {# app.py에서 flash()로 남긴 안내를 꺼내요 (꺼내면 바로 지워져서 새로고침하면 안 보여요) #}
+      <p class="form-success" role="status">{{ message }}</p>   {# 초록 상자로 "후기가 저장됐어요!" (role="status": 화면 읽기 프로그램이 읽어 줘요) #}
+    {% endfor %}
+
+    <form class="review-form" method="post" action="{{ url_for('class_detail', class_id=c.id) }}#reviews"
+          onsubmit="this.querySelector('button[type=submit]').disabled = true">   {# method="post": POST로 보내요 · action: 보낼 주소 = 지금 이 주소 · onsubmit: 한 번 누르면 저장 버튼을 잠가서 두 번 연타해도 한 번만 보내요 #}
+      <h3>수강후기 남기기</h3>
+
+      {% if error %}                      {# 잘못 입력해서 안내 문구가 있으면 #}
+        <p class="form-error" role="alert">{{ error }}</p>   {# 빨간 상자로 보여줘요 (role="alert": 화면 읽기 프로그램이 바로 읽어 줘요) #}
+      {% endif %}
+
+      <label class="field">               {# label로 감싸면 글자를 눌러도 입력칸이 선택돼요 #}
+        <span>닉네임</span>
+        <input type="text" name="nickname" maxlength="20" required
+               value="{{ form.get('nickname', '') }}" placeholder="예: 주말공방러">   {# name: 파이썬에서 꺼낼 이름 · maxlength: 20자까지 · required: 비우면 브라우저가 막아요 · value: 에러 때 적었던 값 다시 채우기 #}
+      </label>
+
+      <fieldset class="field">            {# fieldset: 여러 칸을 한 묶음으로 (별점 5개 = 한 질문) #}
+        <legend>별점</legend>             {# 묶음의 제목 #}
+        <div class="star-pick">
+          {% for n in range(5, 0, -1) %}  {# 5, 4, 3, 2, 1 순서로 버튼을 만들어요 #}
+            <label>
+              <input type="radio" name="rating" value="{{ n }}" required
+                     {% if form.get('rating') == n|string %}checked{% endif %}>   {# radio: 여러 개 중 하나만 고르기 · 같은 name끼리 한 묶음 · 에러 때 골랐던 별점 다시 선택 #}
+              <span class="star" aria-hidden="true">{{ "★" * n }}</span> {{ n }}점   {# "★" * 3 → ★★★ (별은 꾸밈이라 화면 읽기에서 빼요) #}
+            </label>
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      <label class="field">
+        <span>후기 내용</span>
+        <textarea name="content" rows="4" maxlength="500" required
+                  placeholder="수업은 어땠나요? 좋았던 점, 아쉬웠던 점을 자유롭게 적어 주세요.">{{ form.get('content', '') }}</textarea>   {# textarea: 여러 줄 입력칸 · 500자까지 #}
+      </label>
+
+      <button type="submit">저장</button>   {# type="submit": 누르면 form 안의 값을 action 주소로 보내요 #}
+    </form>
+
+    {% if reviews %}                      {# 이 클래스의 후기가 하나라도 있으면 #}
+      <ul class="review-list">
+        {% for r in reviews %}            {# 후기를 하나씩 꺼내서 #}
+          <li class="review">
+            <p class="review-head">
+              <strong>{{ r.nickname }}</strong>   {# 닉네임 (Flask가 <script> 같은 위험한 글자를 자동으로 막아 줘요) #}
+              <span class="star" aria-hidden="true">{{ "★" * r.rating }}{{ "☆" * (5 - r.rating) }}</span>   {# 별점 3 → ★★★☆☆ #}
+              <span class="sr-only">별점 {{ r.rating }}점</span>   {# 눈에는 안 보이고 화면 읽기 프로그램만 읽는 글자 #}
+              <span class="muted">{{ r.created }}</span>   {# 쓴 시각 #}
+            </p>
+            <p class="review-body">{{ r.content }}</p>   {# 후기 내용 (줄바꿈도 그대로 보여요) #}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}                            {# 후기가 하나도 없으면 #}
+      <p class="empty">아직 남겨진 후기가 없어요</p>
+    {% endif %}
+  </section>
+
+  <section class="cta" aria-label="더 둘러보기">   {# 커다란 손그림 뱃지 버튼: 같은 카테고리 더 보기 #}
+    <a class="badge c-yellow" data-cat="{{ c.category }}" href="{{ url_for('class_list', category=c.category) }}" style="--d:1">
+      {{ blob(c.id) }}
+      <span class="inner"><span class="word">{{ hop(c.category ~ " 더 보기") }}</span><span class="cap">비슷한 클래스를 더 둘러보세요</span></span>
+    </a>
+  </section>
+{% endblock %}                            {# 본문 빈칸 채우기 끝 #}

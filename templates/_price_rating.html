@@ -1,0 +1,21 @@
+{# 가격·평점 조각: 목록 카드와 상세 화면이 같이 써요 → 빈칸 처리가 언제나 똑같아요 #}
+{# 이 조각을 끼워 넣는 쪽에 c(클래스 하나)가 있어야 해요 #}
+<p class="price">
+  {% if c.sale_price is none %}           {# 판매가가 비어 있으면 #}
+    <span class="inquiry">가격 문의</span>
+  {% else %}                              {# 판매가가 있으면 #}
+    {% if c.on_sale %}<span class="pct">{{ ((1 - c.sale_price / c.price) * 100)|round|int }}%</span>{% endif %}   {# 할인율: 실제 정가·할인가로 계산 #}
+    <strong>{{ c.sale_price|won }}</strong>   {# 판매가 #}
+    {% if c.on_sale %}<s>{{ c.price|won }}</s>{% endif %}   {# 할인 중이면 정가에 취소선 #}
+  {% endif %}
+</p>
+
+<p class="rating">
+  {% if c.rating is none %}               {# 평점이 비어 있으면 #}
+    <span class="muted">아직 리뷰가 없어요</span>
+  {% else %}                              {# 평점이 있으면 #}
+    <span class="star" aria-hidden="true">★</span>
+    <strong>{{ "%.1f"|format(c.rating) }}</strong>
+    <span class="muted">({{ c.reviews }})</span>   {# 평점(리뷰 수) #}
+  {% endif %}
+</p>

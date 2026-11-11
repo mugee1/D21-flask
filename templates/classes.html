@@ -1,0 +1,63 @@
+{% extends "base.html" %}                 {# base.html 공통틀을 물려받아요 #}
+{% from "_hop.html" import hop %}         {# 글자 통통 도구 #}
+
+{% block title %}클래스 목록 · 클래스로 마켓{% endblock %}   {# 탭 제목 빈칸 채우기 #}
+
+{% block content %}                       {# 본문 빈칸 채우기 시작 #}
+  <div class="list-head">                 {# 제목 + 부제 #}
+    <h1 class="page-title intro">{{ hop("이번 주말, 뭘 배울까") }}</h1>
+    <p class="sub">하루면 끝나는 원데이 클래스</p>
+  </div>
+
+  {# 카테고리 칩: 누르면 /classes?category=...&sort=... 로 이동해요 (지금 정렬은 그대로 유지) #}
+  <nav class="chips chips-scroll" aria-label="카테고리">
+    <a class="chip c-cream {% if not category %}is-on{% endif %}" href="{{ url_for('class_list', sort=sort or None) }}" {% if not category %}aria-current="page"{% endif %}>전체</a>
+    {% for cat in categories %}
+      <a class="chip c-yellow {% if cat == category %}is-on{% endif %}" data-cat="{{ cat }}" href="{{ url_for('class_list', category=cat, sort=sort or None) }}" {% if cat == category %}aria-current="page"{% endif %}>{{ cat }}</a>
+    {% endfor %}
+  </nav>
+
+  {# 개수 + 정렬 상자: 정렬을 바꾸면 바로 다시 불러와요 #}
+  <form class="list-bar" method="get" action="{{ url_for('class_list') }}">
+    <p class="count">클래스 <strong>{{ classes|length }}</strong>개</p>
+    {% if category %}<input type="hidden" name="category" value="{{ category }}">{% endif %}   {# 고른 카테고리를 유지해요 #}
+    <select class="sort" name="sort" aria-label="정렬" onchange="this.form.submit()">
+      <option value="" {% if sort == "" %}selected{% endif %}>추천순</option>
+      <option value="rating" {% if sort == "rating" %}selected{% endif %}>평점 높은순</option>
+      <option value="price" {% if sort == "price" %}selected{% endif %}>낮은 가격순</option>
+    </select>
+    <noscript><button type="submit">보기</button></noscript>   {# 자바스크립트가 꺼져 있을 때만 보여요 #}
+  </form>
+
+  {% if classes %}                        {# 보여줄 클래스가 하나라도 있으면 #}
+    <div class="cards">                   {# PC 여러 열, 휴대폰 1열 #}
+      {% for c in classes %}
+        <div class="card-wrap" id="class-{{ c.id }}">   {# 카드 + 하트 버튼 묶음 · id: 찜 누른 뒤 이 자리로 돌아오는 표시 #}
+          <a class="card" href="{{ url_for('class_detail', class_id=c.id) }}">
+            {% include "_thumb.html" %}   {# 썸네일 조각: 이미지 없으면 카테고리 색 + 아이콘 #}
+            <div class="card-body">
+              <p class="meta">{{ c.category }} · {{ c.region }}</p>
+              <h2>{{ c.title }}</h2>
+              {% include "_price_rating.html" %}   {# 가격·평점 조각 (상세 화면과 같은 조각) #}
+            </div>
+          </a>
+
+          {# 하트 버튼: 링크(a) 안에 버튼을 넣으면 안 돼서, 카드 옆에 두고 CSS로 오른쪽 위에 겹쳐 놓아요 #}
+          <form class="card-wish" method="post" action="{{ url_for('set_wish', class_id=c.id) }}">   {# 찜은 값을 바꾸니까 POST #}
+            <input type="hidden" name="next" value="classes">   {# 숨은 칸: "목록으로 돌아와 줘" #}
+            <input type="hidden" name="category" value="{{ category }}">   {# 지금 고른 카테고리를 기억해서 돌아올 때 그대로 #}
+            <input type="hidden" name="sort" value="{{ sort }}">           {# 지금 고른 정렬도 그대로 #}
+            <input type="hidden" name="want" value="{{ 'off' if c.id in wished else 'on' }}">   {# 숨은 칸: 찜했으면 "취소해줘", 아니면 "찜해줘" #}
+            {% if c.id in wished %}           {# 이미 찜한 클래스면 #}
+              <button type="submit" class="heart is-on" aria-label="{{ c.title }} 찜 취소" title="찜 취소">♥</button>   {# 꽉 찬 하트 · aria-label: 화면 읽기 프로그램용 설명 #}
+            {% else %}                        {# 아직이면 #}
+              <button type="submit" class="heart" aria-label="{{ c.title }} 찜하기" title="찜하기">♡</button>   {# 빈 하트 #}
+            {% endif %}
+          </form>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}                              {# 결과가 0개면 #}
+    <p class="empty">조건에 맞는 클래스가 없어요</p>
+  {% endif %}
+{% endblock %}                            {# 본문 빈칸 채우기 끝 #}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}                 {# base.html 공통틀을 물려받아요 #}
+{% from "_hop.html" import hop, blob %}   {# 글자 통통 + 손그림 뱃지 모양 도구를 가져와요 #}
+
+{% block title %}홈 · 클래스로 마켓{% endblock %}   {# 탭 제목 빈칸 채우기 #}
+
+{% set colors = ["yellow", "pink", "teal", "purple", "orange", "blue"] %}   {# 모르는 카테고리가 생기면 이 색을 돌려 써요 #}
+
+{% block content %}                       {# 본문 빈칸 채우기 시작 #}
+  <section class="hero">
+    <h1 class="display intro">{{ hop("클래스로 마켓") }}</h1>
+    <p class="lead">지금 <strong>{{ total }}개</strong>의 클래스가 기다리고 있어요</p>   {# app.py가 건네준 전체 개수 #}
+  </section>
+
+  <section class="stack" aria-label="카테고리">   {# 카테고리마다 커다란 손그림 뱃지 하나씩 #}
+    <a class="badge c-cream" href="{{ url_for('class_list') }}" style="--d:0">
+      {{ blob(0) }}
+      <span class="inner"><span class="word">{{ hop("전체 보기") }}</span><span class="cap">모든 클래스 {{ total }}개 한눈에 보기</span></span>
+    </a>
+    {% for cat in categories %}           {# 카테고리 이름을 하나씩 꺼내서 #}
+      <a class="badge c-{{ colors[loop.index0 % colors|length] }}" data-cat="{{ cat }}" href="{{ url_for('class_list', category=cat) }}" style="--d:{{ loop.index }}">
+        {{ blob(loop.index) }}
+        <span class="inner"><span class="word">{{ hop(cat) }}</span><span class="cap">{{ cat }} 클래스 {{ counts[cat] }}개</span></span>
+      </a>
+    {% endfor %}                          {# 반복 끝 #}
+  </section>
+{% endblock %}                            {# 본문 빈칸 채우기 끝 #}

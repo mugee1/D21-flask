@@ -1,0 +1,20 @@
+{% extends "base.html" %}                 {# base.html 공통틀을 물려받아요 #}
+{% from "_hop.html" import hop, blob %}   {# 글자 통통 + 손그림 뱃지 모양 도구 #}
+
+{% block title %}소개 · 클래스로 마켓{% endblock %}   {# 탭 제목 빈칸 채우기 #}
+
+{% block content %}                       {# 본문 빈칸 채우기 시작 #}
+  <section class="about">
+    <h1 class="display huge intro">{{ hop("서비스 소개") }}</h1>
+    <div class="about-txt">               {# 가운데 정렬, 큼직하고 잘 읽히는 글씨 #}
+      <p>클래스로 마켓은 배우고 싶은 수업을 쉽게 찾고 신청할 수 있는 클래스 장터예요.</p>
+    </div>
+  </section>
+
+  <section class="cta" aria-label="클래스 보러 가기">
+    <a class="badge c-orange" href="{{ url_for('class_list') }}" style="--d:1">
+      {{ blob(2) }}
+      <span class="inner"><span class="word">{{ hop("둘러보기") }}</span><span class="cap">지금 열린 클래스 보러 가기</span></span>
+    </a>
+  </section>
+{% endblock %}                            {# 본문 빈칸 채우기 끝 #}

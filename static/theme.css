@@ -1,0 +1,428 @@
+/* ==========================================================================
+   테마: 어두운 배경 + 손으로 그린 듯한 색깔 뱃지 (모든 화면 공통)
+   원칙: "느낌"은 제목·버튼·움직임에서만 내고,
+        내용(클래스 이름·가격·평점·설명)은 잘 읽히는 Pretendard + 높은 대비로 보여줘요.
+   style.css(기본 배치) 다음에 불러와서 색과 글꼴을 덮어써요.
+   ========================================================================== */
+
+.theme-blob {
+  --bg: #0b0b0a;          /* 배경: 거의 검정 */
+  --surface: #171613;     /* 카드 바탕 */
+  --line: #2e2c27;        /* 카드 테두리 */
+  --fg: #f4f2ea;          /* 글자: 따뜻한 미색 (배경과 대비 약 18:1) */
+  --text: #dedbd1;        /* 긴 글 */
+  --dim: #a3a095;         /* 보조 글자 (대비 약 7.5:1 → 작은 글씨도 잘 읽혀요) */
+  --ink: #0b0b0a;         /* 색깔 면 위 글자 */
+  --cream: #f4f2ea;
+  --yellow: #f3e85a;
+  --pink: #f29ab1;
+  --teal: #4fb3a3;
+  --purple: #a283f5;
+  --orange: #f07a3c;
+  --blue: #7cc0f2;
+  --sale: #ff7d8e;        /* 할인율: 어두운 배경에서도 잘 보이는 분홍빛 빨강 */
+  --display: "Jua", "Arial Rounded MT Bold", sans-serif;   /* 큰 제목·메뉴·버튼 */
+  --body: "Pretendard", -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;   /* 내용 */
+  --hand-line: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 10' preserveAspectRatio='none'%3E%3Cpath d='M2 5.2C120 3.9 250 6.3 400 5S690 3.7 998 5.4' fill='none' stroke='%234d4a42' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  color-scheme: dark;
+  overflow-x: clip;
+}
+
+.theme-blob a { color: var(--fg); }
+.theme-blob :focus-visible { outline: 2px dashed var(--yellow); outline-offset: 4px; border-radius: 12px; }
+.theme-blob .muted { color: var(--dim); }
+
+/* 카테고리 색: 어느 화면에서든 같은 카테고리는 같은 색 (--c) */
+.c-cream  { --c: var(--cream); }
+.c-yellow { --c: var(--yellow); }
+.c-pink   { --c: var(--pink); }
+.c-teal   { --c: var(--teal); }
+.c-purple { --c: var(--purple); }
+.c-orange { --c: var(--orange); }
+.c-blue   { --c: var(--blue); }
+[data-cat="공예"]   { --c: var(--orange); }
+[data-cat="드로잉"] { --c: var(--pink); }
+[data-cat="디지털"] { --c: var(--blue); }
+[data-cat="요리"]   { --c: var(--yellow); }
+[data-cat="운동"]   { --c: var(--teal); }
+[data-cat="음악"]   { --c: var(--purple); }
+
+/* ---------- 머리 · 바닥 ---------- */
+.theme-blob .top {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: linear-gradient(to bottom, #0b0b0af5 60%, #0b0b0a00);
+  border-bottom: 0;
+}
+.theme-blob .logo { color: var(--fg); font-family: var(--display); font-weight: 400; font-size: 26px; }
+.theme-blob .logo:hover { text-decoration: none; animation: hop .5s steps(4); }
+.theme-blob .menu { gap: 24px; }
+.theme-blob .menu a { color: var(--dim); font-family: var(--display); font-size: 19px; font-weight: 400; }
+.theme-blob .menu a:hover,
+.theme-blob .menu a[aria-current="page"] { color: var(--fg); font-weight: 400; text-decoration: none; }
+.theme-blob .menu a[aria-current="page"] { background: var(--hand-line) no-repeat 0 100% / 100% 8px; padding-bottom: 4px; }
+
+.theme-blob .bottom {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 28px 40px 40px;
+  box-sizing: border-box;
+  text-align: left;
+  font-size: 14px;
+  color: var(--dim);
+  background: var(--hand-line) no-repeat 40px 0 / calc(100% - 80px) 10px;
+}
+
+/* ---------- 큰 제목 (손그림 느낌은 여기서만) ---------- */
+.theme-blob .display,
+.theme-blob .content h1.page-title {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+.theme-blob .display { font-size: clamp(48px, 10vw, 140px); text-align: center; }
+.theme-blob .display.huge { font-size: clamp(80px, 18vw, 240px); line-height: .95; }
+.theme-blob .content h1.page-title { font-size: clamp(40px, 6.5vw, 84px); }
+
+.display span, .page-title span { display: inline-block; white-space: pre; }
+.intro span { animation: drop .75s cubic-bezier(.3, 1.5, .5, 1) both; animation-delay: calc(.1s + var(--i) * 60ms); }
+.display:hover span, .page-title:hover span { animation: hop .5s steps(4) both; animation-delay: calc(var(--i) * 40ms); }
+
+.lead { margin: 20px 0 0; text-align: center; font-size: clamp(17px, 1.8vw, 21px); color: var(--text); }
+.lead strong { color: var(--yellow); }
+
+/* ---------- 홈 ---------- */
+.hero { padding: clamp(32px, 8vw, 96px) 0 clamp(24px, 5vw, 56px); }
+
+/* ---------- 손그림 뱃지 (홈 카테고리, 각 화면 아래 큰 버튼) ---------- */
+.stack { display: grid; gap: clamp(16px, 3vw, 40px); padding-bottom: 40px; }
+
+.badge {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: clamp(220px, 32vw, 420px);
+  color: var(--ink) !important;
+  text-decoration: none;
+  animation: thud .9s cubic-bezier(.3, 1.4, .5, 1) both;
+  animation-delay: calc(.3s + var(--d, 0) * 90ms);
+}
+.badge:hover { text-decoration: none; }
+.badge svg.shape { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.badge svg.shape path { fill: var(--c, var(--yellow)); }
+.badge:hover svg.shape,
+.badge:focus-visible svg.shape { filter: url(#boil); }
+
+.badge .inner { position: relative; display: grid; justify-items: center; gap: clamp(8px, 1.4vw, 16px); width: 80%; text-align: center; }
+.badge .word { font-family: var(--display); font-size: clamp(46px, 10vw, 160px); line-height: 1; white-space: nowrap; }
+.badge .word span { display: inline-block; white-space: pre; }
+.badge:hover .word span,
+.badge:focus-visible .word span { animation: hop .55s steps(5) both; animation-delay: calc(var(--i) * 45ms); }
+.badge .cap { font-size: clamp(15px, 1.5vw, 19px); font-weight: 600; line-height: 1.35; }
+
+.cta { padding: clamp(40px, 7vw, 80px) 0 24px; }
+.cta .badge { height: clamp(200px, 26vw, 340px); }
+.cta .badge .word { font-size: clamp(40px, 8vw, 120px); }
+
+/* ---------- 목록 ---------- */
+.theme-blob .list-head { margin: clamp(8px, 3vw, 32px) 0 24px; }
+.theme-blob .sub { margin-top: 12px; font-size: 17px; color: var(--text); }
+
+.theme-blob .chips { gap: 10px; }
+.theme-blob .chip {
+  padding: 9px 18px;
+  border: 1.5px solid var(--line);
+  background: transparent;
+  color: var(--fg);
+  font-family: var(--display);
+  font-size: 17px;
+  line-height: 1.2;
+}
+.theme-blob .chip:hover { border-color: var(--c, var(--fg)); color: var(--fg); }
+.theme-blob .chip.is-on { background: var(--c, var(--fg)); border-color: var(--c, var(--fg)); color: var(--ink); font-weight: 400; }
+
+.theme-blob .count { color: var(--dim); font-size: 15px; }
+.theme-blob .count strong { color: var(--fg); }
+.theme-blob .sort {
+  color: var(--fg);
+  border: 1.5px solid var(--line);
+  background-color: var(--surface);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23f4f2ea' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  font-size: 15px;
+}
+.theme-blob .sort option { background: var(--surface); color: var(--fg); }
+.theme-blob .list-bar button { background: var(--yellow); color: var(--ink); }
+
+/* 카드: 장식은 줄이고 내용이 먼저 보이게 */
+.theme-blob .cards { gap: 14px; }
+.theme-blob .card {
+  padding: 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 22px;
+  background: var(--surface);
+  transition: transform .2s ease, border-color .2s ease;
+}
+.theme-blob a.card:hover { border-color: var(--c, var(--fg)); transform: translateY(-3px); }
+.theme-blob .card:has(.thumb-cover[data-cat="공예"])   { --c: var(--orange); }
+.theme-blob .card:has(.thumb-cover[data-cat="드로잉"]) { --c: var(--pink); }
+.theme-blob .card:has(.thumb-cover[data-cat="디지털"]) { --c: var(--blue); }
+.theme-blob .card:has(.thumb-cover[data-cat="요리"])   { --c: var(--yellow); }
+.theme-blob .card:has(.thumb-cover[data-cat="운동"])   { --c: var(--teal); }
+.theme-blob .card:has(.thumb-cover[data-cat="음악"])   { --c: var(--purple); }
+
+.theme-blob .card h2 { color: var(--fg); font-size: 17px; font-weight: 600; line-height: 1.35; }
+.theme-blob .meta { color: var(--dim); font-size: 13px; }
+
+/* 썸네일: 카테고리 색의 울퉁불퉁한 면 + 검정 아이콘 */
+.theme-blob .thumb { border-radius: 46% 54% 42% 58% / 55% 45% 55% 45%; background: #26241f; }
+.theme-blob .thumb-cover { background: var(--c, #3a3832); color: var(--ink); }
+.theme-blob .thumb-cover svg { stroke-width: 1.9; }
+.theme-blob a.card:hover .thumb-cover { filter: url(#boil); }
+
+/* 가격 · 평점 */
+.theme-blob .price strong { color: var(--fg); }
+.theme-blob .price .pct { color: var(--sale); }
+.theme-blob .price s { color: var(--dim); }
+.theme-blob .rating { color: var(--fg); }
+.theme-blob .star { color: var(--yellow); }
+.theme-blob .empty { color: var(--dim); font-size: 17px; padding: 64px 0; }
+
+/* ---------- 상세 ---------- */
+.theme-blob .back { color: var(--dim); font-family: var(--display); font-size: 18px; }
+.theme-blob .back:hover { color: var(--fg); text-decoration: none; }
+
+.theme-blob .detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: clamp(24px, 5vw, 80px);
+  align-items: start;
+  padding: clamp(8px, 2vw, 24px) 0 0;
+}
+.theme-blob .detail .thumb { width: clamp(120px, 14vw, 168px); height: clamp(120px, 14vw, 168px); margin-bottom: 24px; }
+.theme-blob .detail .thumb-cover svg { width: 56%; height: 56%; }
+.theme-blob .detail .meta { font-size: 15px; margin-bottom: 10px; }
+.theme-blob .detail h1 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(36px, 5vw, 64px);
+  line-height: 1.12;
+  color: var(--fg);
+  word-break: keep-all;
+}
+.theme-blob .detail .price { font-size: 24px; margin-top: 20px; }
+.theme-blob .detail .price s { font-size: 16px; }
+.theme-blob .detail .rating { margin-top: 10px; font-size: 16px; }
+
+/* 정보표: 손으로 그은 선으로 칸을 나눠요 */
+.facts { margin: 8px 0 0; display: grid; }
+.facts .frow {
+  display: grid;
+  grid-template-columns: minmax(80px, auto) 1fr;
+  column-gap: 24px;
+  background: var(--hand-line) no-repeat 0 100% / 100% 10px;
+}
+.facts .frow:first-child { box-shadow: none; background-image: var(--hand-line), var(--hand-line); background-position: 0 0, 0 100%; background-size: 100% 10px, 100% 10px; }
+.facts dt, .facts dd { margin: 0; padding: 18px 0; font-size: 17px; line-height: 1.45; }
+.facts dt { color: var(--dim); }
+.facts dd { color: var(--fg); font-weight: 500; }
+
+/* ---------- 찜하기 ---------- */
+.wish-form { margin: 20px 0 0; }
+.wish-btn {
+  padding: 10px 22px;
+  border: 1.5px solid var(--pink);
+  border-radius: 999px;
+  background: transparent;              /* 찜 전: 테두리만 */
+  color: var(--pink);
+  font-family: var(--display);
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform .15s ease;
+}
+.wish-btn:hover { transform: translateY(-2px); }
+.wish-btn:active { transform: scale(.94); }
+.wish-btn.is-on { background: var(--pink); color: var(--ink); }   /* 찜한 뒤: 분홍으로 꽉 채워요 */
+.wish-btn.small { padding: 7px 16px; font-size: 15px; }
+
+/* 목록 카드의 하트: 카드 오른쪽 위에 동그랗게 겹쳐요 */
+.card-wrap { position: relative; display: grid; scroll-margin-top: 96px; }   /* scroll-margin: 돌아왔을 때 위쪽 고정 메뉴에 가려지지 않게 */
+.card-wrap .card-body { padding-right: 44px; }   /* 하트와 제목이 겹치지 않게 오른쪽을 비워요 */
+.card-wish { position: absolute; top: 10px; right: 10px; margin: 0; }
+.heart {
+  display: grid;
+  place-items: center;
+  width: 40px;                          /* 손가락으로 누르기 충분한 크기 */
+  height: 40px;
+  padding: 0;
+  border: 1.5px solid var(--line);
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--pink);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform .15s ease, border-color .15s ease;
+}
+.heart:hover { border-color: var(--pink); transform: scale(1.08); }
+.heart:active { transform: scale(.9); }
+.heart.is-on { background: var(--pink); border-color: var(--pink); color: var(--ink); }   /* 찜한 카드: 분홍으로 꽉 */
+
+.wish-item { display: grid; gap: 10px; align-content: start; }   /* 카드 아래에 찜 취소 버튼 */
+.wish-item form { margin: 0; }
+.theme-blob .list-head + .count { margin: 0 0 16px; }
+.empty p { margin: 0 0 16px; }
+.theme-blob .wish-go { color: var(--yellow); font-family: var(--display); font-size: 18px; }
+
+/* ---------- 수강후기 (상세 화면 아래) ---------- */
+.reviews { width: min(100%, 760px); padding: clamp(40px, 6vw, 72px) 0 0; }   /* 글 읽기 편한 폭으로 줄여요 */
+.theme-blob .reviews-title { margin: 0 0 20px; font-family: var(--display); font-weight: 400; font-size: clamp(28px, 4vw, 40px); color: var(--fg); }
+.theme-blob .reviews-title .muted { font-size: .6em; }
+
+/* 평균 별점 요약: 큰 숫자 + 별 + 설명을 한 줄로 */
+.review-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: -4px 0 24px; }
+.review-summary .avg { font-family: var(--display); font-weight: 400; font-size: clamp(44px, 6vw, 60px); line-height: 1; color: var(--fg); }
+.review-summary .star.big { font-size: 24px; letter-spacing: 2px; }
+.review-summary .muted { font-size: 15px; }
+
+/* 남기기 form: 카드처럼 테두리 있는 상자 */
+.review-form {
+  display: grid;
+  gap: 18px;
+  padding: clamp(18px, 3vw, 28px);
+  border: 1.5px solid var(--line);
+  border-radius: 22px;
+  background: var(--surface);
+}
+.review-form h3 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 22px; color: var(--fg); }
+
+.field { display: grid; gap: 8px; min-width: 0; margin: 0; padding: 0; border: 0; }   /* 칸 이름 + 입력칸을 위아래로 */
+.field > span, .field legend { padding: 0; font-size: 15px; font-weight: 600; color: var(--dim); }
+.field legend { margin-bottom: 8px; }
+.field input[type="text"],
+.field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  font-size: 16px;                    /* 16px 이상이어야 아이폰에서 입력할 때 화면이 확대되지 않아요 */
+}
+.field textarea { min-height: 110px; line-height: 1.55; resize: vertical; }   /* 위아래로만 늘릴 수 있어요 */
+.field input::placeholder, .field textarea::placeholder { color: var(--dim); }
+.field input:focus, .field textarea:focus { border-color: var(--yellow); }
+
+/* 별점 고르기: 동그란 알약 버튼 5개 (진짜 동그라미 라디오는 숨겨요) */
+.star-pick { display: flex; flex-wrap: wrap; gap: 8px; }
+.star-pick label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  color: var(--fg);
+  font-size: 15px;
+  cursor: pointer;
+}
+.star-pick input { position: absolute; opacity: 0; width: 1px; height: 1px; }   /* 눈에서만 숨기고 키보드로는 고를 수 있어요 */
+.star-pick label:hover { border-color: var(--yellow); }
+.star-pick label:has(input:checked) { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }   /* 고른 별점 = 노란색 */
+.star-pick label:has(input:checked) .star { color: var(--ink); }
+.star-pick label:has(input:focus-visible) { outline: 2px dashed var(--yellow); outline-offset: 3px; }   /* 키보드로 움직이면 점선 */
+
+.review-form button {
+  justify-self: start;
+  padding: 12px 32px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--yellow);
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 19px;
+  cursor: pointer;
+  transition: transform .15s ease;
+}
+.review-form button:hover { transform: translateY(-2px); }
+.review-form button:active { transform: scale(.96); }
+
+.review-form button:disabled { opacity: .6; cursor: wait; transform: none; }   /* 보내는 중: 흐리게 + 못 누르게 */
+
+.form-success { margin: 0 0 16px; padding: 12px 14px; border-radius: 12px; background: #15302a; color: var(--teal); font-weight: 600; }   /* 저장 성공: 초록 상자 */
+.form-error { margin: 0; padding: 12px 14px; border-radius: 12px; background: #3a1a1f; color: var(--sale); font-weight: 600; }   /* 입력 안내: 빨간 상자 */
+
+/* 후기 목록: 손으로 그은 선으로 한 개씩 나눠요 */
+.review-list { display: grid; margin: 24px 0 0; padding: 0; list-style: none; }
+.review { padding: 20px 0; background: var(--hand-line) no-repeat 0 100% / 100% 10px; }
+.review-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 0 0 8px; font-size: 14px; }
+.review-head strong { color: var(--fg); font-size: 17px; }
+.review-body { margin: 0; color: var(--text); font-size: 16px; line-height: 1.65; white-space: pre-line; word-break: keep-all; overflow-wrap: anywhere; }   /* pre-line: 적은 줄바꿈 그대로 */
+.theme-blob .reviews .empty { padding: 40px 0; }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }   /* 화면 읽기 프로그램 전용 글자 */
+
+/* ---------- 소개 · 404 · 인사 ---------- */
+.about { padding: clamp(32px, 7vw, 96px) 0 0; text-align: center; }
+.theme-blob .content h1.about-h1 { margin: clamp(16px, 3vw, 32px) 0 0; font-family: var(--display); font-weight: 400; font-size: clamp(28px, 4vw, 44px); color: var(--fg); }
+.about-txt {
+  width: min(100%, 760px);
+  margin: clamp(24px, 4vw, 48px) auto 0;
+  font-size: clamp(19px, 1.9vw, 24px);
+  line-height: 1.7;
+  color: var(--text);
+  text-wrap: balance;
+  word-break: keep-all;
+}
+.about-txt p { margin: 0 0 .4em; }
+
+/* ---------- 움직임 ---------- */
+@keyframes hop {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  25% { transform: translateY(-14%) rotate(-4deg); }
+  50% { transform: translateY(-6%) rotate(3deg); }
+  75% { transform: translateY(-2%) rotate(-1deg); }
+}
+@keyframes drop {
+  from { transform: translateY(-60%); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+@keyframes thud {
+  0%   { transform: translateY(40px) scale(.96, 1.04); opacity: 0; }
+  60%  { transform: translateY(0) scale(1.02, .97); opacity: 1; }
+  100% { transform: none; }
+}
+
+/* 움직임을 싫어하는 사용자 설정이면 애니메이션을 꺼요 */
+@media (prefers-reduced-motion: reduce) {
+  .theme-blob *, .theme-blob *::before, .theme-blob *::after { animation: none !important; transition: none !important; }
+  .badge:hover svg.shape, .theme-blob a.card:hover .thumb-cover { filter: none; }
+}
+
+/* ---------- 휴대폰 ---------- */
+@media (max-width: 760px) {
+  .theme-blob .detail { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .theme-blob .bottom { padding: 24px 16px 32px; background-position: 16px 0; background-size: calc(100% - 32px) 10px; }
+  .theme-blob .top { flex-wrap: wrap; row-gap: 8px; }   /* 메뉴가 4개라 좁은 휴대폰에선 로고 아래로 내려가게 해요 */
+  .theme-blob .menu { gap: 16px; flex-wrap: wrap; }
+  .theme-blob .menu a { font-size: 17px; }
+  .theme-blob .logo { font-size: 22px; }
+  .badge .inner { width: 86%; }
+  /* style.css가 휴대폰에서 카드 테두리를 없애는데, 어두운 배경에선 카드 면이 있어야 내용이 묶여 보여요 */
+  .theme-blob .card { padding: 12px; border: 1.5px solid var(--line); }
+  .theme-blob a.card:hover { border: 1.5px solid var(--c, var(--fg)); }
+  .theme-blob .cards { gap: 12px; }
+}
