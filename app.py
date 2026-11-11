@@ -21,6 +21,10 @@ if not app.secret_key:                   # 열쇠가 없으면 (.env를 안 만�
     )
 app.permanent_session_lifetime = timedelta(days=30)   # 찜 목록을 브라우저를 껐다 켜도 30일 동안 기억해요
 
+# 세션 쿠키를 https(자물쇠 주소)일 때만 보내게 해요 → 카페 와이파이 같은 곳에서 남이 쿠키를 엿보기 어려워져요
+# 내 컴퓨터(http://127.0.0.1, FLASK_DEBUG=1)에서는 끄고, 서버(Render, https)에서만 켜져요
+app.config["SESSION_COOKIE_SECURE"] = os.environ.get("FLASK_DEBUG") != "1"   # FLASK_DEBUG=1이 아니면 (= 서버면) 참
+
 init_db()                                # 서버가 켜질 때 reviews.db에 후기 표가 없으면 만들어요 (있으면 그대로 둬요)
 
 
